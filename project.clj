@@ -6,4 +6,5 @@
   :dependencies [[org.clojure/clojure "1.8.0"]]
   :main ^:skip-aot weekly-ten.core
   :target-path "target/%s"
+
   :profiles {:uberjar {:aot :all}})
