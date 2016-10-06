@@ -1,6 +1,5 @@
 (ns weekly-ten.utils)
 
-
 (defn int->word4
   "Convert an integer to a 4-byte word."
   [i]
@@ -20,7 +19,7 @@
       (.flip)
       (.getInt)))
 
-(defn read-bytes [input-stream len]
+(defn read-bytes "Reads 'len' bytes from the input-stream" [input-stream len]
   (let [buf (byte-array len)
         _ (.read input-stream buf)]
     buf))

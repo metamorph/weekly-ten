@@ -13,7 +13,9 @@
           answer-bytes (read-bytes in answer-len)]
       (bytes->string answer-bytes))))
 
-(defn query-server [host port query]
+(defn query-server
+  "Send a query to a server over the 'simple' protocol."
+  [host port query]
   (with-open [socket (java.net.Socket. (java.net.InetAddress/getByName host) (int port))
               in     (.getInputStream socket)
               out    (.getOutputStream socket)]

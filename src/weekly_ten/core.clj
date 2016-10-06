@@ -1,7 +1,9 @@
 (ns weekly-ten.core
   (:gen-class)
-  (:require [weekly-ten.server :as server]
-            [weekly-ten.utils :refer :all]))
+  (:require
+   [weekly-ten.client :as client]
+   [weekly-ten.server :as server]
+   [weekly-ten.utils :refer :all]))
 
 
 (defn simple-query-handler
@@ -26,5 +28,16 @@
     (.write out answer)))
 
 (defn -main
-  [& args]
-  (println "Done"))
+  "Main application entry point"
+  [mode & args]
+  (case mode
+
+    "--server" (let [port (Integer/parseInt (first args))]
+                 (printf "Starting Server on %d" port)
+                 (server/start-server simple-protocol-handler port))
+
+    "--client" (let [[host port query] args]
+                 (printf "Querying server %s:%s : %s => \n " host port query)
+                 (println (client/query-server host (Integer/parseInt port) query)))
+
+    :else (throw (IllegalArgumentException. "Not a valid option"))))

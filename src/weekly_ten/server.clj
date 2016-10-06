@@ -3,43 +3,42 @@
   (:require [clojure.tools.logging :as log])
   (:import java.net.ServerSocket))
 
+(defn handle-client
+  "Opens (and closes) streams to the client and delegates to the 'handler-fn'."
+  [handler-fn client]
+  (log/infof "Processing client connection %s with %s" client handler-fn)
+  (with-open [client client
+              in     (.getInputStream client)
+              out    (.getOutputStream client)]
+    (handler-fn in out)))
 
-(defn run-server [handler-fn port]
+(defn accept-clients
+  "Loop that will accept client connections and process them using 'handler-fn' in another thread."
+  [handler-fn server]
+  (let [client (.accept server)]
+    (log/infof "Client connected : %s" client)
+    (future (handle-client handler-fn client))
+    (recur handler-fn server)))
+
+(defn start-server
+  "Starts a server that will delegate to the 'handler-fn' when a client connects.
+  Returns a server that can be closed with '.close'"
+  [handler-fn port]
+  (let [server (ServerSocket. port)]
+    (log/infof "Starting %s on port %d" handler-fn port)
+    (future ;; Wait for connections in a separate thread
+      (accept-clients handler-fn server))
+    server))
+
+(defn run-server
+  "Start a server that will serve *one* request and then die."
+  [handler-fn port]
   (with-open [server (ServerSocket. (int port))
               client (.accept server)
-              in (.getInputStream client)
-              out (.getOutputStream client)]
+              in     (.getInputStream client)
+              out    (.getOutputStream client)]
     (log/infof "Processing request from client %s" client)
     (handler-fn in out)
     (log/info "Request handled!")
     :done))
 
-;; (defn thread!
-;;   "Run something in a thread"
-;;   [fun & args]
-;;   (.start (Thread. #(apply fun args))))
-
-;; (defn handle-request [client-socket handler-fn]
-;;   (log/infof "Processing request from %s with %s" client-socket handler-fn)
-;;   (with-open [client client-socket
-;;               in (clojure.java.io/input-stream (.getInputStream client))
-;;               out (clojure.java.io/output-stream (.getOutputStream client))]
-;;     (handler-fn in out)))
-
-;; (defn start [handler-fn port]
-;;   (log/infof "Starting server on port %d" port)
-;;   (let [server (ServerSocket. (int port))
-;;         poll-fn (fn [s]
-;;                   (log/info "Starting client handler")
-;;                   (let [client (.accept s)]
-;;                     (log/infof "Client connected as %s" client)
-;;                     (thread! handle-request client handler-fn)
-;;                     (recur s)))]
-;;     (thread! poll-fn server)
-;;     server))
-
-;; (defn stop [server]
-;;   (when server
-;;     (do
-;;       (log/infof "Closing server %s" server)
-;;       (.close server))))
