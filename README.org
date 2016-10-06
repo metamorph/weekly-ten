@@ -1,0 +1,57 @@
+* weekly-ten
+
+The Weekly Programming Challenge : http://weblog.jamisbuck.org/2016/10/1/weekly-programming-challenge-10.html
+
+** Installation
+
+Requires Leiningen to build:
+
+#+BEGIN_SRC sh
+lein uberjasr
+#+END_SRC
+
+** Usage
+
+To start the server:
+
+#+BEGIN_SRC 
+$ java -jar target/uberjar/weekly-ten-0.1.0-SNAPSHOT-standalone.jar --server <port>
+#+END_SRC
+
+To launch a client that will send a query to the server:
+
+#+BEGIN_SRC 
+$ java -jar target/uberjar/weekly-ten-0.1.0-SNAPSHOT-standalone.jar --client <host> <port> <query>
+#+END_SRC
+
+The query engine is really simple - it simply returns the ~query~ reversed.
+
+** Design
+
+The server is built in a way that allows a custom 'handler' to be defined. When launching from the command-line the ~simple-protocol-handler~ is used.
+
+The ~simple-protocol-handler~ defines the protocol described in the challenge.
+
+The server can be started in embedded mode like so:
+
+#+BEGIN_SRC clojure
+(weekly-ten.server/start-server handler-function port)
+#+END_SRC
+
+where the ~handler-function~ is a function that takes two parameters: a ~java.io.InputStream~ (for reading from the client) and a ~java.io.OutputStream~ (for writing to the client). The accepting connections, managing resources etc. is handled outside of this.
+
+So - in theory - implementing the HTTP server should be possible by simple adding another "handler function".
+
+*** Bugs
+
+Most likely.
+
+
+** License
+
+#+BEGIN_QUOTE
+Copyright © 2016
+
+Distributed under the Eclipse Public License either version 1.0 or (at
+your option) any later version.
+#+END_QUOTE
