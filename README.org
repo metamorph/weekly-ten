@@ -1,4 +1,4 @@
-* weekly-ten
+* Weekly Challenge #10
 
 The Weekly Programming Challenge : http://weblog.jamisbuck.org/2016/10/1/weekly-programming-challenge-10.html
 
@@ -29,6 +29,8 @@ The query engine is really simple - it simply returns the ~query~ reversed.
 ** Design
 
 The server is built in a way that allows a custom 'handler' to be defined. When launching from the command-line the ~simple-protocol-handler~ is used.
+
+The server uses good old threads to support multiple concurrent clients.
 
 The ~simple-protocol-handler~ defines the protocol described in the challenge.
 
