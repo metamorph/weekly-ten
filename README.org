@@ -26,6 +26,23 @@ $ java -jar target/uberjar/weekly-ten-0.1.0-SNAPSHOT-standalone.jar --client <ho
 
 The query engine is really simple - it simply returns the ~query~ reversed.
 
+*** The Phteven Variant
+
+#+BEGIN_SRC 
+$ java -jar target/uberjar/weekly-ten-0.1.0-SNAPSHOT-standalone.jar --pherver <port>
+#+END_SRC
+
+This starts a server that will delegate queries to [[http://phteven.io/][Phteven.IO]] :-)
+
+Use it like so:
+
+#+BEGIN_SRC 
+$ java -jar target/uberjar/weekly-ten-0.1.0-SNAPSHOT-standalone.jar --client <host> <port> "Hello, Steven"
+
+> Querying server localhost:9999 : Hello, Steven => 
+> Hello, Phteven
+#+END_SRC
+
 ** Design
 
 The server is built in a way that allows a custom 'handler' to be defined. When launching from the command-line the ~simple-protocol-handler~ is used.
@@ -43,6 +60,8 @@ The server can be started in embedded mode like so:
 where the ~handler-function~ is a function that takes two parameters: a ~java.io.InputStream~ (for reading from the client) and a ~java.io.OutputStream~ (for writing to the client). The accepting connections, managing resources etc. is handled outside of this.
 
 So - in theory - implementing the HTTP server should be possible by simple adding another "handler function".
+
+Due to lack of time I decided to skip the HTTP client/server challenge. Instead I decided to implement a simple HTTP POST client, and to implement a ~query-handler~ that send the query to [[http://phteven.io][Phteven.IO]] to get a phtevenized response :-).
 
 *** Bugs
 

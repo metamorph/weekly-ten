@@ -1,5 +1,6 @@
 (ns weekly-ten.client
-  (:require [weekly-ten.utils :refer :all]))
+  (:require [cheshire.core :as json]
+            [weekly-ten.utils :refer :all]))
 
 (defn url-encode [s] (java.net.URLEncoder/encode s "UTF-8"))
 
@@ -46,7 +47,9 @@
       (let [response (read-http-response in)
             status (:status response)]
         (if (= 200 status)
-          (:body response)
+          (let [json (:body response)
+                data (:data (json/parse-string json true))]
+            data)
           (throw (RuntimeException. (format "Bad return code: %d" status))))))))
 
 (defn query-client
